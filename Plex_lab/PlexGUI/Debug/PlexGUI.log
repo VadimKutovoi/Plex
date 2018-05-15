@@ -1,0 +1,4 @@
+﻿  PlexGUI.cpp
+  PlexGUI.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
+  PlexGUI.vcxproj -> C:\Users\sirku\documents\visual studio 2015\Projects\Plex_lab\Debug\PlexGUI.exe
+  PlexGUI.vcxproj -> C:\Users\sirku\documents\visual studio 2015\Projects\Plex_lab\Debug\PlexGUI.pdb (Partial PDB)
