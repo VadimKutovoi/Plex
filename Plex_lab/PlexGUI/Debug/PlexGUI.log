@@ -1,4 +1,8 @@
 ﻿  PlexGUI.cpp
+c:\users\sirku\desktop\plex\plex_lab\plexgui\..\\Plex_lab\Classes.h(436): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sirku\desktop\plex\plex_lab\plexgui\..\\Plex_lab\Classes.h(437): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sirku\desktop\plex\plex_lab\plexgui\..\\Plex_lab\Classes.h(438): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\sirku\desktop\plex\plex_lab\plex_lab\classes.h(464): warning C4715: 'TChart::Excretion': not all control paths return a value
   PlexGUI.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
-  PlexGUI.vcxproj -> C:\Users\sirku\documents\visual studio 2015\Projects\Plex_lab\Debug\PlexGUI.exe
-  PlexGUI.vcxproj -> C:\Users\sirku\documents\visual studio 2015\Projects\Plex_lab\Debug\PlexGUI.pdb (Partial PDB)
+  PlexGUI.vcxproj -> C:\Users\sirku\Desktop\Plex\Plex_lab\Debug\PlexGUI.exe
+  PlexGUI.vcxproj -> C:\Users\sirku\Desktop\Plex\Plex_lab\Debug\PlexGUI.pdb (Partial PDB)

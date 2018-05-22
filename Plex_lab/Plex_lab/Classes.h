@@ -21,14 +21,17 @@ class TRoot
 protected:
 	bool visible;
 	bool active;
-
+	int type;
 public:
+	
 	TRoot()
 	{
 		visible = false;
 		active = false;
+		type = 0;
 	}
 
+	int getType() { return type; }
 	virtual void Show(Graphics^gr) = 0;
 	virtual void Hide(Graphics^gr) = 0;
 	virtual void Move(Graphics^gr, int dx, int dy) = 0;
@@ -37,13 +40,19 @@ public:
 class TPoint : public TRoot
 {
 protected:
-	int x, y;
+	int x, y, type;
 
 public:
 	TPoint(int _x = 0, int _y = 0)
 	{
 		x = _x;
 		y = _y;
+		type = 1;
+	}
+
+	int getType()
+	{
+		return type;
 	}
 
 	int GetX()
@@ -55,10 +64,17 @@ public:
 	{
 		return y;
 	}
-
 	virtual void Show(Graphics^gr)
 	{
+		
 		gr->DrawEllipse(Pens::Black, x - 2, y - 2, x + 2, y + 2);
+		visible = true;
+	}
+
+	virtual void Show(Graphics^gr, Color cl)
+	{
+		Pen^pen = gcnew Pen(cl);
+		gr->DrawEllipse(pen, x - 2, y - 2, x + 2, y + 2);
 		visible = true;
 	}
 
@@ -77,48 +93,27 @@ public:
 	}
 };
 
-class TLine : public TPoint
-{
-protected:
-	int x2, y2;
-
-public:
-	virtual void Show(Graphics^gr)
-	{
-		gr->DrawLine(Pens::Black, x, y, x2, y2);
-		visible = true;
-	}
-
-	virtual void Hide(Graphics^gr)
-	{
-		gr->DrawLine(Pens::Black, x, y, x2, y2);
-		visible = false;
-	}
-
-	virtual void Move(Graphics^gr, int dx, int dy)
-	{
-		Hide(gr);
-		x += dx;
-		y += dy;
-		x2 += dx;
-		y2 += dy;
-		Show(gr);
-	}
-};
-
 class TChart : public TRoot
 {
 protected:
 	TRoot*pBegin, *pEnd;
 	bool first;
 	stack<TCurrLine> st;
+	
 public:
 	TChart*pRes;
 public:
+	int highlited;
 	TChart(TRoot*pB = nullptr, TRoot*pE = nullptr)
 	{
 		pBegin = pB;
 		pEnd = pE;
+		highlited = 0;
+	}
+
+	int getType()
+	{
+		return type;
 	}
 
 	void SetBegin(TRoot*pB)
@@ -172,6 +167,9 @@ public:
 
 			if (pB && pE) {
 				gr->DrawLine(Pens::Black, pB->GetX(), pB->GetY(), pE->GetX(), pE->GetY());
+				pB->Show(gr);
+				pE->Show(gr);
+				visible = true;
 				return tc->pEnd;
 			}
 		}
@@ -239,6 +237,7 @@ public:
 				}
 			}
 		}
+		visible = true;
 	}
 
 	void Hide(Graphics^gr)
@@ -389,5 +388,78 @@ public:
 			}
 		}
 		return false;
+	}
+
+	TRoot* Highlite(Graphics^ gr, int x1, int y1) {
+		int Epsilon = 10;
+		TCurrLine curr;
+		TPoint*tmp;
+		curr.tc = this;
+		curr.pB = curr.pE = nullptr;
+		
+		while (!st.empty())
+			st.pop();
+
+		st.push(curr);
+		while (!st.empty()) {
+			curr = st.top();
+			st.pop();
+
+			while (curr.pB == nullptr)
+			{
+				tmp = dynamic_cast<TPoint*>(curr.tc->pBegin);
+				if (tmp != nullptr)
+					curr.pB = tmp;
+				else
+				{
+					st.push(curr);
+					curr.tc = (TChart*)curr.tc->pBegin;
+				}
+			}
+			if (curr.pE == nullptr)
+			{
+				tmp = dynamic_cast<TPoint*>(curr.tc->pEnd);
+				
+				if (tmp != nullptr)
+					curr.pE = tmp;
+				else 
+				{
+					st.push(curr);
+					curr.tc = (TChart*)curr.tc->pEnd;
+					curr.pB = nullptr;
+					st.push(curr);
+				}
+			}
+			if (curr.pB != nullptr && curr.pE != nullptr)
+			{
+					float x, y, c, d;
+					x = curr.pB->GetY() - curr.pE->GetY();
+					y = curr.pE->GetX() - curr.pB->GetX();
+					c = curr.pB->GetX()*(curr.pE->GetY() - curr.pB->GetY()) - curr.pB->GetY()*(curr.pE->GetX() - curr.pB->GetX());
+					d = fabs(x1*x + y1*y + c) / sqrt(x*x + y*y);
+					if (d < Epsilon / 3) 
+					{
+						gr->DrawLine(Pens::Red, curr.pB->GetX(), curr.pB->GetY(), curr.pE->GetX(), curr.pE->GetY());
+						curr.tc->highlited = 1;
+						return curr.tc;
+
+					}
+					if (!st.empty())
+					{
+						curr = st.top();
+						st.pop();
+
+						if (!curr.pB) {
+							curr.pB = tmp;
+						}
+						else {
+							curr.pE = tmp;
+						}
+
+						st.push(curr);
+					}
+				}		
+
+		}
 	}
 };
